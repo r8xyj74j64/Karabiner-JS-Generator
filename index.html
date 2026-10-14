@@ -14,20 +14,15 @@
 
         <div class="form-group">
             <label for="bundleId">1. アプリのパッケージ名（Bundle ID）</label>
-            <input type="text" id="bundleId" value="com.apple.Safari" placeholder="ここに入力または貼り付けてください...">
+            <input type="text" id="bundleId" placeholder="ここに入力または貼り付けてください...">
         </div>
 
         <div class="form-group">
             <label for="fromKey">2. 変更元キー（From）</label>
-            <input type="text" id="fromKey" value="caps_lock" placeholder="例: caps_lock, f2, w">
+            <input type="text" id="fromKey" placeholder="例: caps_lock, f2, w">
         </div>
-
-        <div class="form-group">
-            <label for="toKey">3. 変更先キー（To）</label>
-            <input type="text" id="toKey" value="left_control" placeholder="例: left_control, vk_none, up_arrow">
-        </div>
-
-        <div class="button-group">
+        
+<div class="button-group">
             <button id="btn-generate" class="btn btn-primary" onclick="generateJS()">変換する</button>
             <button id="btn-clear" class="btn btn-danger" onclick="clearFields()">クリア</button>
         </div>
