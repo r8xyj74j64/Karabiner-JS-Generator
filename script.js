@@ -6,8 +6,10 @@ function generateJS() {
     // 入力数に合わせてループ回数を決定
     var maxLen = Math.max(fromKeys.length, bundleIds.length);
     
-    // main()関数内の「openApplication('キー', 'ID')」の行を動的に生成
+    // main()関数内の「openApplication('キー', 'ID')」の行、および注釈用の文字列を動的に生成
     var mainCallsCode = "";
+    var notesArray = [];
+    
     for (var i = 0; i < maxLen; i++) {
         var fk = fromKeys[i] || "";
         var bid = bundleIds[i] || "";
@@ -17,27 +19,39 @@ function generateJS() {
 
         mainCallsCode += "      openApplication('" + fk + "', '" + bid + "')";
         
+        // 注釈テキスト用の形式を組み立て (例: "- Shift+2: com.apple.Safari")
+        notesArray.push("'- " + fk + ": " + bid + "'");
+        
         // 最後の要素以外にはカンマと改行を付ける
         if (i < maxLen - 1) {
             mainCallsCode += ",\n";
         }
     }
 
-    // あなたが提示してくれた美しいマクロ形式のテンプレートにそのままハメ込む
-    var template = 
+    // description用の文言（最初のアプリ名か、複数あれば一括マッピングとする）
+    var descText = bundleIds[0] ? bundleIds[0] + ' 等を開くマクロ' : 'アプリ起動カスタムマッピング';
+    // description_notesの配列を結合
+    var notesText = notesArray.join(',\n      ');
+
+    // 1. 前半部分の文字列を作成（ここを入力内容に合わせて可変にしました！）
+    var headerPart = 
 `// JavaScript must be written in ECMAScript 5.1.
 
 function main() {
   return {
-    description: 'Open apps with right_shift+1/2/3',
-    description_notes: ['- right_shift+1/2/3: Safari/TextEdit/ActivityMonitor'],
+    description: '${descText}',
+    description_notes: [
+      ${notesText}
+    ],
     manipulators: [
 ${mainCallsCode}
     ]
   }
-}
+}\n\n`;
 
-function openApplication(from, bundleIdentifier) {
+    // 2. 後半部分（定型文マクロ関数とmain()の呼び出し）の文字列を作成
+    var footerPart = 
+`function openApplication(from, bundleIdentifier) {
   // Output a debug message
   console.log(from + ' -> ' + bundleIdentifier)
 
@@ -61,7 +75,8 @@ function openApplication(from, bundleIdentifier) {
 
 main()`;
 
-    document.getElementById('output').value = template;
+    // 3. 前半と後半を確実に結合してテキストエリアに出力
+    document.getElementById('output').value = headerPart + footerPart;
 }
 
 function clearFields() {
